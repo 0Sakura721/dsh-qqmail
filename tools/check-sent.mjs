@@ -1,0 +1,12 @@
+import { TokenManager } from '../lib/auth.js';
+import { QqMailClient } from '../lib/mcp.js';
+const tokens = new TokenManager({ workbuddyAutoImport: true });
+const client = new QqMailClient({ endpoint:'https://api.mail.qq.com/mcp', getToken:()=>tokens.getAccessToken(), onUnauthorized:()=>tokens.refresh() });
+await client.initialize();
+const me = await client.callTool('GetMe', {});
+const alias = me.data.data.data.aliases.find(a=>a.is_primary).alias_id;
+const sent = await client.callTool('ListMessages', { alias_id: alias, dir: 'sent', limit: 5 });
+const arr = Array.isArray(sent.data.data?.data) ? sent.data.data.data : [];
+console.log('sent 文件夹条数:', arr.length);
+for (const m of arr) console.log(' -', m.subject);
+console.log('自检邮件是否发出:', arr.some(m => String(m.subject).includes('[dsh-qqmail]')));

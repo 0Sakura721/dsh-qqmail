@@ -1,0 +1,39 @@
+# Leaked secrets / local credentials — must never be published
+.credentials*
+*.credentials.v3.json
+.master.key
+connector-states*.json
+credentials.json
+state.json
+*.log
+
+# Plugin state dirs that may hold tokens
+qqmail/
+.dsh/
+
+# Local personal config
+config.local.json
+.env
+.env.*
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+pnpm-lock.yaml
+
+# Editor and OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary and backup files
+*.bak
+*.bak-*
+*.tmp
+*.swp
+*~
+.tmp*/
+backup*/

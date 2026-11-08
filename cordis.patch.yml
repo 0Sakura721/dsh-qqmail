@@ -1,0 +1,22 @@
+# dsh-qqmail —— 把 QQ 邮箱接进 DeepSeek Harness
+#
+# 本行只做一件事：把 host 插件挂进配置树。工具全部由 index.js 里的 apply()
+# 通过 ctx.tools.register 注册，不依赖任何第三方包（零依赖，纯 ESM）。
+#
+# 凭据来源（按优先级）：
+#   1. ~/.dsh/qqmail/credentials.json        插件自有存储（首次运行自动生成）
+#   2. WorkBuddy 连接器凭据                   自动借用，免二次扫码
+#      <~/.workbuddy/connectors/<userId>/.master.key> + .credentials.v3.json
+#
+# 配置文件（可选，放在 ~/.dsh/qqmail/config.json）：
+#   {
+#     "downloadDir": "~/Downloads",
+#     "confirmTtlMs": 300000,
+#     "workbuddyAutoImport": true
+#   }
+
+- insert:
+    - id: dsh-qqmail
+      name: dsh-qqmail
+      inject: [ tools, systemPrompt ]
+      config: {}
