@@ -44,7 +44,11 @@ function loadConfig(configFromRow = {}) {
     defaultAlias: typeof merged.defaultAlias === 'string' ? merged.defaultAlias : '',
     downloadDir: typeof merged.downloadDir === 'string' && merged.downloadDir ? merged.downloadDir : defaultDownloadDir(),
     confirmTtlMs: Number(merged.confirmTtlMs) > 0 ? Number(merged.confirmTtlMs) : 300_000,
-    workbuddyAutoImport: merged.workbuddyAutoImport !== false,
+    // 默认完全独立：不读 WorkBuddy 的凭据，也不回写它的文件。
+    // 插件走自己的扫码授权 + 自己的令牌续期，删除 WorkBuddy 也照常工作。
+    // 想让插件复用本机已有的 WorkBuddy 授权（省掉首次扫码），把这两项显式打开。
+    workbuddyAutoImport: merged.workbuddyAutoImport === true,
+    workbuddyReseal: merged.workbuddyReseal === true,
     timeoutMs: Number(merged.timeoutMs) > 0 ? Number(merged.timeoutMs) : 60_000,
     promptSection: merged.promptSection !== false,
   };
@@ -162,7 +166,8 @@ export function apply(ctx, rowConfig = {}) {
 
 /** 供外部诊断：不注册工具，只跑一次凭据与连通性检查。 */
 export async function diagnose() {
-  const tokens = new TokenManager({ workbuddyAutoImport: true });
+  // 诊断跟随配置默认值（独立模式），不再强制借用 WorkBuddy
+  const tokens = new TokenManager(loadConfig());
   const info = await tokens.describe();
   const client = new QqMailClient({
     endpoint: ENDPOINT,
