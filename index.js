@@ -96,6 +96,7 @@ export function apply(ctx, rowConfig = {}) {
   const { tools } = createTools({
     client,
     config,
+    tokens,
     getMe: async (opts) => {
       await ensureReady();
       return getMe(opts);
@@ -103,13 +104,15 @@ export function apply(ctx, rowConfig = {}) {
     downloadDir: config.downloadDir,
   });
 
-  // 注册工具：每个 execute 前先确保连接可用。
+  // 注册工具：每个 execute 前先确保连接可用 —— 除了 qqmail_login，
+  // 它本身就是用来建立授权的，不能先要求"已授权"。
   const disposers = [];
   for (const tool of tools) {
+    const needsConnection = tool.name !== 'qqmail_login';
     const wrapped = {
       ...tool,
       async execute(args, exec) {
-        await ensureReady();
+        if (needsConnection) await ensureReady();
         return tool.execute(args, exec);
       },
     };
@@ -130,6 +133,8 @@ export function apply(ctx, rowConfig = {}) {
       order,
       text: () => [
         'QQ 邮箱工具（qqmail_*）已接入当前会话，账号是用户本人的 QQ 邮箱。',
+        '授权优先零操作：本机 WorkBuddy 若已绑定 QQ 邮箱，插件会自动复用其授权，用户不需要扫码也不需要改文件；首次调用任意 qqmail_* 工具时就会自动完成这一步。',
+        '只有当本机确实没有可用凭据时，才调用 qqmail_login：它会在终端画出二维码供用户扫码。用户说「连不上 / 没授权 / 怎么用」时也先试 qqmail_login —— 已有授权它会直接返回现状，不会重复走流程。',
         '发信、回复、转发、删除、清空垃圾箱都需要二次确认：第一次调用不带 confirmation_token，返回里会给出 operation_summary 与 confirmation_token；',
         '必须把摘要通过 ask_user_question 交给用户确认，得到同意后再用完全相同的参数加 confirmation_token 重发。不要替用户确认，不要复用旧 token。',
         '不知道用哪个 alias_id 时传空，默认走主账号；只有用户明确要求用附属账号才填 alias_id。',
