@@ -3,19 +3,23 @@
 # 本行只做一件事：把 host 插件挂进配置树。工具全部由 index.js 里的 apply()
 # 通过 ctx.tools.register 注册，不依赖任何第三方包（零依赖，纯 ESM）。
 #
-# 凭据来源（按优先级）：
-#   1. ~/.dsh/qqmail/credentials.json        插件自有存储（首次运行自动生成）
-#   2. WorkBuddy 连接器凭据                   自动借用，免二次扫码
-#      <~/.workbuddy/connectors/<userId>/.master.key> + .credentials.v3.json
+# 授权：
+#   默认完全独立 —— 插件自己走 OAuth 扫码授权，令牌只存
+#   ~/.dsh/qqmail/credentials.json，不读也不写 ~/.workbuddy/。
 #
-# 配置文件（可选，放在 ~/.dsh/qqmail/config.json）：
+#   想让插件复用本机 WorkBuddy 已有的授权（省掉首次扫码），在
+#   ~/.dsh/qqmail/config.json 里显式打开：
 #   {
+#     "workbuddyAutoImport": true,
+#     "workbuddyReseal": true,
 #     "downloadDir": "~/Downloads",
-#     "confirmTtlMs": 300000,
-#     "workbuddyAutoImport": true
+#     "confirmTtlMs": 300000
 #   }
+#
+# 设置页：安装后 DSH 设置里会出现「QQ 邮箱」，可在页面内扫码授权与查看状态。
 
 - insert:
     - id: dsh-qqmail
       name: dsh-qqmail
-      inject: [ tools, systemPrompt ]      config: {}
+      inject: [ tools, systemPrompt ]
+      config: {}
