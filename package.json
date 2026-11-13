@@ -1,23 +1,26 @@
 {
   "name": "dsh-qqmail",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "把 QQ 邮箱接进 DeepSeek Harness：12 个原生工具覆盖收发、搜索、附件，凭据复用本机已授权的 OAuth 令牌并自动续期。",
+  "description": "把 QQ 邮箱接进 DeepSeek Harness：13 个原生工具覆盖收发、搜索、附件，设置页内可扫码授权与查看状态，令牌只存本机并自动续期。",
   "icon": "./icon.svg",
   "main": "index.js",
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./package.json": "./package.json",
     "./locale/*.json": "./locale/*.json"
   },
   "files": [
     "index.js",
+    "client.js",
     "lib",
     "tools",
     "cordis.patch.yml",
     "icon.svg",
     "README.md",
+    "docs",
     "locale/*.json"
   ],
   "keywords": [
@@ -36,6 +39,13 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
     }
   }
 }

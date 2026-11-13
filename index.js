@@ -23,11 +23,11 @@ import { QqMailClient } from './lib/mcp.js';
 import { createTools } from './lib/tools.js';
 import { pickAliases } from './lib/format.js';
 import { CONFIG_PATH, readJson, log, HOME } from './lib/paths.js';
+import { registerSettingsApi } from './lib/settings-api.js';
 import path from 'node:path';
 
 export const name = 'dsh-qqmail';
 export const inject = ['tools', 'systemPrompt'];
-
 const ENDPOINT = 'https://api.mail.qq.com/mcp';
 const ME_TTL_MS = 5 * 60_000;
 
@@ -107,6 +107,24 @@ export function apply(ctx, rowConfig = {}) {
     },
     downloadDir: config.downloadDir,
   });
+
+  // 设置页的数据面：扫码授权 + 状态查看。
+  // 注册失败（例如宿主没有 webServer）不应连累工具层，单独兜住。
+  const settingsDisposers = [];
+  if (config.settingsPage !== false) {
+    try {
+      settingsDisposers.push(...registerSettingsApi({
+        ctx,
+        getTokens: () => tokens,
+        getMe: async () => {
+          await ensureReady();
+          return getMe();
+        },
+      }));
+    } catch (error) {
+      log(`settings api unavailable: ${error.message}`);
+    }
+  }
 
   // 注册工具：每个 execute 前先确保连接可用 —— 除了 qqmail_login，
   // 它本身就是用来建立授权的，不能先要求"已授权"。
