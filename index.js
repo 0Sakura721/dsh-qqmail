@@ -110,6 +110,8 @@ export function apply(ctx, rowConfig = {}) {
 
   // 设置页的数据面：扫码授权 + 状态查看。
   // 注册失败（例如宿主没有 webServer）不应连累工具层，单独兜住。
+  // 重载时同一个 route id 会抛 "duplicate prefix route"，这不是致命问题 ——
+  // 旧的那条仍然在，功能照常，只需记一行日志。
   const settingsDisposers = [];
   if (config.settingsPage !== false) {
     try {
@@ -122,7 +124,11 @@ export function apply(ctx, rowConfig = {}) {
         },
       }));
     } catch (error) {
-      log(`settings api unavailable: ${error.message}`);
+      if (/duplicate prefix route/i.test(String(error?.message))) {
+        log('settings api: already registered by an earlier generation, keeping it');
+      } else {
+        log(`settings api unavailable: ${error.message}`);
+      }
     }
   }
 
