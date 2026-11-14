@@ -117,7 +117,16 @@ window.__ModuleLoader__.load({
             setError('没有权限访问插件接口（会话未认证）。');
             return;
           }
-          const data = await res.json();
+          if (!res.ok) {
+            setError(`读取状态失败（HTTP ${res.status}）：路由未注册或宿主端异常，请确认插件已安装并重启。`);
+            return;
+          }
+          const text = await res.text();
+          if (!text) {
+            setError('读取状态失败：服务端返回空响应，插件数据面可能尚未就绪。');
+            return;
+          }
+          const data = JSON.parse(text);
           setStatus(data);
           setError(null);
         } catch (e) {
@@ -143,9 +152,14 @@ window.__ModuleLoader__.load({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({}),
           });
-          const data = await res.json();
+          const text = await res.text();
+          const data = text ? JSON.parse(text) : {};
           if (!res.ok) {
-            setError(data?.message || data?.error || '发起授权失败');
+            setError(data?.message || data?.error || `发起授权失败（HTTP ${res.status}）`);
+            return;
+          }
+          if (!data.svg) {
+            setError('服务端没有返回二维码，请检查插件是否就绪后重试。');
             return;
           }
           setQr(data.svg);
@@ -154,7 +168,8 @@ window.__ModuleLoader__.load({
           pollRef.current = setInterval(async () => {
             try {
               const r = await fetch(`${API}/login`, { headers: { Accept: 'application/json' } });
-              const s = await r.json();
+              const t = await r.text();
+              const s = t ? JSON.parse(t) : {};
               if (s.status === 'done') {
                 stopPolling();
                 setQr(null);

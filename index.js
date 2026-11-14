@@ -27,7 +27,7 @@ import { registerSettingsApi } from './lib/settings-api.js';
 import path from 'node:path';
 
 export const name = 'dsh-qqmail';
-export const inject = ['tools', 'systemPrompt'];
+export const inject = ['tools', 'systemPrompt', 'webServer', 'connection'];
 const ENDPOINT = 'https://api.mail.qq.com/mcp';
 const ME_TTL_MS = 5 * 60_000;
 
