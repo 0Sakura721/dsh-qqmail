@@ -33,9 +33,9 @@ window.__ModuleLoader__.load({
 .dqm-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;
   padding:2px 9px;border-radius:999px;border:1px solid var(--dsw-alias-border-l2)}
 .dqm-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
-.dqm-ok{color:#1a7f37}.dqm-ok .dqm-dot{background:#1a7f37}
-.dqm-warn{color:#9a6700}.dqm-warn .dqm-dot{background:#d4a72c}
-.dqm-bad{color:#b42318}.dqm-bad .dqm-dot{background:#b42318}
+.dqm-ok{color:var(--dsw-alias-state-success-primary)}.dqm-ok .dqm-dot{background:var(--dsw-alias-state-success-primary)}
+.dqm-warn{color:var(--dsw-alias-state-warn-primary)}.dqm-warn .dqm-dot{background:var(--dsw-alias-state-warn-primary)}
+.dqm-bad{color:var(--dsw-alias-state-error-primary)}.dqm-bad .dqm-dot{background:var(--dsw-alias-state-error-primary)}
 .dqm-actions{display:flex;gap:8px;flex-wrap:wrap}
 .dqm-btn{font:inherit;font-size:13px;height:32px;padding:0 14px;border-radius:8px;
   border:1px solid var(--dsw-alias-border-l2);background:transparent;
@@ -43,15 +43,15 @@ window.__ModuleLoader__.load({
 .dqm-btn:hover:not(:disabled){background:var(--dsw-alias-bg-l2)}
 .dqm-btn:disabled{opacity:.55;cursor:default}
 .dqm-btn-primary{background:var(--dsw-alias-brand-primary);border-color:transparent;
-  color:#fff}
+  color:var(--dsw-alias-bg-base)}
 .dqm-btn-primary:hover:not(:disabled){filter:brightness(1.06);
   background:var(--dsw-alias-brand-primary)}
-.dqm-btn-danger{color:#b42318;border-color:rgba(180,35,24,.35)}
+.dqm-btn-danger{color:var(--dsw-alias-state-error-primary);border-color:color-mix(in srgb, var(--dsw-alias-state-error-primary) 35%, transparent)}
 .dqm-qr{display:flex;flex-direction:column;align-items:center;gap:10px;
   padding:12px 0 4px}
 .dqm-hint{color:var(--dsw-alias-label-tertiary);font-size:12px;text-align:center;
   max-width:420px}
-.dqm-err{color:#b42318;font-size:12px;word-break:break-word}
+.dqm-err{color:var(--dsw-alias-state-error-primary);font-size:12px;word-break:break-word}
 .dqm-scopes{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .dqm-scope{font-size:11.5px;padding:1px 7px;border-radius:6px;
   background:var(--dsw-alias-bg-l2);color:var(--dsw-alias-label-secondary)}
