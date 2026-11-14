@@ -199,7 +199,8 @@ window.__ModuleLoader__.load({
         try {
           const res = await fetch(`${API}/logout`, { method: 'POST' });
           if (!res.ok) {
-            const d = await res.json().catch(() => ({}));
+            const t = await res.text();
+            const d = t ? JSON.parse(t) : {};
             setError(d.error || '断开失败');
           }
           stopPolling();
