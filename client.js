@@ -49,8 +49,6 @@ window.__ModuleLoader__.load({
 .dqm-btn-danger{color:#b42318;border-color:rgba(180,35,24,.35)}
 .dqm-qr{display:flex;flex-direction:column;align-items:center;gap:10px;
   padding:12px 0 4px}
-.dqm-qr svg{width:232px;height:232px;border-radius:8px;background:#fff;
-  padding:10px;box-sizing:content-box;display:block}
 .dqm-hint{color:var(--dsw-alias-label-tertiary);font-size:12px;text-align:center;
   max-width:420px}
 .dqm-err{color:#b42318;font-size:12px;word-break:break-word}
@@ -158,12 +156,12 @@ window.__ModuleLoader__.load({
             setError(data?.message || data?.error || `发起授权失败（HTTP ${res.status}）`);
             return;
           }
-          if (!data.svg) {
-            setError('服务端没有返回二维码，请检查插件是否就绪后重试。');
+          if (!data.url) {
+            setError('服务端没有返回授权链接，请检查插件是否就绪后重试。');
             return;
           }
-          setQr(data.svg);
-          // 轮询扫码进度
+          setQr(data.url);
+          // 轮询授权进度
           stopPolling();
           pollRef.current = setInterval(async () => {
             try {
@@ -246,15 +244,22 @@ window.__ModuleLoader__.load({
                   h('span', { className: 'dqm-v' }, status?.importedFrom || '未知')),
               ].filter(Boolean)
               : h('span', { className: 'dqm-hint', style: { textAlign: 'left' } },
-                '还没有授权。点下面的按钮生成二维码，用手机 QQ 扫一次即可（之后自动续期）。')),
+                '还没有授权。点下面的按钮，浏览器会自动打开授权页，登录 QQ 邮箱确认后即可（之后自动续期）。')),
 
         qr
           ? h('div', { className: 'dqm-card' },
             h('div', { className: 'dqm-qr' },
-              h('div', { dangerouslySetInnerHTML: { __html: qr } }),
-              h('div', { className: 'dqm-hint' }, '用手机 QQ 扫描上方二维码，确认授权后本页会自动刷新。'),
+              h('div', { className: 'dqm-hint' },
+                '浏览器已打开授权页。请在浏览器里登录 QQ 邮箱并确认授权，',
+                '完成后本页会自动刷新。'),
+              qr.startsWith('http')
+                ? h('a', {
+                  href: qr, target: '_blank', rel: 'noreferrer',
+                  className: 'dqm-btn', style: { marginTop: '8px', textDecoration: 'none', display: 'inline-block' },
+                }, '没打开？点这里手动打开授权页')
+                : null,
               h('button', {
-                type: 'button', className: 'dqm-btn', disabled: busy,
+                type: 'button', className: 'dqm-btn', style: { marginTop: '8px' }, disabled: busy,
                 onClick: () => { stopPolling(); setQr(null); },
               }, '取消')))
           : null,
@@ -265,7 +270,7 @@ window.__ModuleLoader__.load({
             className: 'dqm-btn dqm-btn-primary',
             disabled: busy || Boolean(qr),
             onClick: startLogin,
-          }, authorized ? '重新授权' : '扫码授权'),
+          }, authorized ? '重新授权' : '开始授权'),
           authorized
             ? h('button', {
               type: 'button',
