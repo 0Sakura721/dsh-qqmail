@@ -114,7 +114,7 @@ window.__ModuleLoader__.load({
         try {
           const res = await fetch(`${API}/status`, { headers: { Accept: 'application/json' } });
           if (res.status === 401 || res.status === 403) {
-            setError('没有权限访问插件接口（会话未认证）。');
+            setError('没有权限访问插件接口（会话未认证）。请在 DSH 客户端页面内操作，而不是直接用浏览器/curl 访问。');
             return;
           }
           if (!res.ok) {
